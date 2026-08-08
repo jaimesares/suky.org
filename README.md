@@ -69,6 +69,12 @@ To change the typeface, edit the `fonts` entry in `astro.config.mjs` and the `--
 > `astro check` needs TypeScript 6.x — TypeScript 7's native compiler does not yet expose
 > the programmatic API the Astro language server uses.
 
+The pnpm version is pinned through `packageManager` in `package.json`. This is required,
+not cosmetic: the build-script allowlist lives in `pnpm-workspace.yaml` under `allowBuilds`,
+which is pnpm 11 syntax. Cloudflare's build image ships pnpm 10, which reads that file as a
+workspace manifest and aborts with `packages field missing or empty`. With the field pinned,
+pnpm 10 delegates to the declared version and the install succeeds.
+
 ## Deploying to Cloudflare Pages
 
 The project is configured in `wrangler.jsonc` (`pages_build_output_dir: "dist"`).
