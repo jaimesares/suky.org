@@ -1,0 +1,50 @@
+---
+import { Font } from 'astro:assets';
+import ColorField from '../components/ColorField.astro';
+import PawTrails from '../components/PawTrails.astro';
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description: string;
+	ogTitle?: string;
+	ogDescription?: string;
+}
+
+const { title, description, ogTitle = title, ogDescription = description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta name="theme-color" content="#0C1418" />
+
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+		<meta property="og:site_name" content="suky.org" />
+		<meta property="og:title" content={ogTitle} />
+		<meta property="og:description" content={ogDescription} />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:locale" content="es_ES" />
+		<meta name="twitter:card" content="summary" />
+
+		<Font cssVariable="--font-baloo" preload />
+		<meta name="generator" content={Astro.generator} />
+	</head>
+
+	<body>
+		<ColorField />
+		<div class="veil" aria-hidden="true"></div>
+		<PawTrails />
+		<div class="grain" aria-hidden="true"></div>
+
+		<slot />
+	</body>
+</html>
