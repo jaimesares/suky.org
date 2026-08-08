@@ -63,8 +63,8 @@ To change the typeface, edit the `fonts` entry in `astro.config.mjs` and the `--
 | `pnpm build`      | Build the static site to `dist/`                     |
 | `pnpm preview`    | Serve the built site locally                         |
 | `pnpm check`      | Type-check `.astro` files                            |
-| `pnpm cf:preview` | Build and serve through the Cloudflare Pages runtime |
-| `pnpm deploy`     | Build and deploy to Cloudflare Pages                 |
+| `pnpm cf:preview` | Build and serve through the Cloudflare Workers runtime |
+| `pnpm deploy`     | Build and deploy to Cloudflare                       |
 
 > `astro check` needs TypeScript 6.x — TypeScript 7's native compiler does not yet expose
 > the programmatic API the Astro language server uses.
@@ -75,9 +75,14 @@ which is pnpm 11 syntax. Cloudflare's build image ships pnpm 10, which reads tha
 workspace manifest and aborts with `packages field missing or empty`. With the field pinned,
 pnpm 10 delegates to the declared version and the install succeeds.
 
-## Deploying to Cloudflare Pages
+## Deploying to Cloudflare
 
-The project is configured in `wrangler.jsonc` (`pages_build_output_dir: "dist"`).
+The site is deployed as a **Worker serving static assets**, not as a Pages project.
+`wrangler.jsonc` points at the build output:
+
+```jsonc
+"assets": { "directory": "./dist" }
+```
 
 **From the CLI:**
 
@@ -86,10 +91,13 @@ pnpm wrangler login   # once
 pnpm deploy
 ```
 
-**From the dashboard (Git integration):** connect the repository and use
+**From the dashboard (Workers Builds, Git integration):**
 
 - Build command: `pnpm build`
-- Build output directory: `dist`
+- Deploy command: `npx wrangler deploy`
 
-Either way `public/_headers` is picked up automatically: hashed assets under `/_astro/*`
-get a one-year immutable cache, and every response gets basic security headers.
+Use `wrangler deploy`, not `wrangler pages deploy` — the latter looks for a Pages project
+that does not exist and fails with `The Pages project "suky-org" does not exist`.
+
+`public/_headers` is picked up automatically: hashed assets under `/_astro/*` get a
+one-year immutable cache, and every response gets basic security headers.
